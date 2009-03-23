@@ -33,8 +33,6 @@ module Sequel
         begin
           result = Sequel.string_to_date(v)
         rescue Sequel::Error::InvalidValue
-          puts "bad zero: #{v}"
-          result = nil
         end
         result
       end
