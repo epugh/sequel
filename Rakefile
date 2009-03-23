@@ -178,3 +178,17 @@ desc "Print Sequel version"
 task :version do
   puts VERS
 end
+
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = "sequel"
+    s.summary = "Eric's version of Sequel"
+    s.email = "epugh@opensourceconnections.co"
+    s.homepage = "http://github.com/epugh/sequel"
+    s.description = "TODO"
+    s.authors = [""]
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
