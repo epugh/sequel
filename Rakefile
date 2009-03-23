@@ -12,7 +12,7 @@ require "lib/sequel/version"
 
 include FileUtils
 
-NAME = 'sequel'
+NAME = 'sequel-dep4b'
 VERS = Sequel.version
 CLEAN.include ["**/.*.sw?", "pkg", ".config", "rdoc", "coverage", "www/public/*.html"]
 RDOC_OPTS = ["--quiet", "--line-numbers", "--inline-source", '--title', \

@@ -12,14 +12,33 @@ module Sequel
       [0, 246]  => lambda{|v| BigDecimal.new(v)},                   # decimal
       [1, 2, 3, 8, 9, 13, 247, 248]  => lambda{|v| v.to_i},         # integer
       [4, 5]  => lambda{|v| v.to_f},                                # float
-      [10, 14]  => lambda{|v| Sequel.string_to_date(v)},                # date
-      [7, 12] => lambda{|v| Sequel.string_to_datetime(v)},          # datetime
-      [11]  => lambda{|v| Sequel.string_to_time(v)},                # time
+      [10, 14]  => lambda{|v| @zero_date_time_behavior_convert_to_null ? trap_bad_date_time(v) : Sequel.string_to_date(v)},                # date
+      [7, 12] => lambda{|v| @zero_date_time_behavior_convert_to_null ? trap_bad_date_time(v) : Sequel.string_to_datetime(v)},          # datetime
+      [11]  => lambda{|v| @zero_date_time_behavior_convert_to_null ? trap_bad_date_time(v) : Sequel.string_to_time(v)},                # time
       [249, 250, 251, 252]  => lambda{|v| Sequel::SQL::Blob.new(v)} # blob
     }
     MYSQL_TYPE_PROCS.each do |k,v|
       k.each{|n| MYSQL_TYPES[n] = v}
     end
+    
+    @zero_date_time_behavior_convert_to_null = false
+
+    class << self
+      # Similar to the JDBC parameter zeroDateTimeBehavior=convertToNull, handles 
+      # dates 0000-00-00 and times like 00:00:00 and converts to null
+      attr_accessor :zero_date_time_behavior_convert_to_null
+
+      def trap_bad_date_time(v)
+        result = nil
+        begin
+          result = Sequel.string_to_date(v)
+        rescue Sequel::Error::InvalidValue
+          puts "bad zero: #{v}"
+          result = nil
+        end
+        result
+      end
+    end    
   
     # Database class for MySQL databases used with Sequel.
     class Database < Sequel::Database
